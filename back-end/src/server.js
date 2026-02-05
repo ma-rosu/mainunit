@@ -1,12 +1,21 @@
 import express from 'express';
 import { spawn } from 'child_process';
+import path from 'path';
+import { fileURLToPath } from 'url';
+const _filename = fileURLToPath(import.meta.url);
+import { dirname } from 'path';
+const __dirname = dirname(_filename);
 
 const app = express();
 const PORT = 9999;
 let radioProcess = null;
 
 // Middleware pentru a putea citi JSON (dacă vei trimite date mai târziu)
-app.use(express.json());
+app.use(express.static(path.join(__dirname, '../dist')));
+
+app.get(/^(?!\/api).+/, (req, res) => {
+    res.sendFile(path.join(__dirname, '../dist/index.html'));
+});
 
 // Ruta trebuie să înceapă cu /api ca să se pupe cu proxy-ul din Vite
 app.get('/api/radio', (req, res) => 
